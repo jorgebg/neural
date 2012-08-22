@@ -1,0 +1,73 @@
+{% load resources %}
+{% load markup %}
+<!DOCTYPE html> 
+<html>
+	<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Neural</title>
+	<link rel="stylesheet"  href="http://code.jquery.com/mobile/latest/jquery.mobile.min.css" />
+	<link rel="stylesheet" href="{{ STATIC_URL }}style.css" />
+	<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+	<script src="{{ STATIC_URL }}config.js"></script>
+	<script src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
+</head> 
+<body> 
+
+	<div data-role="page" data-add-back-btn="true" class="type-interior">
+		<div data-role="header">
+			<a{% if object.is_root %} class="ui-btn-active"{% endif %} href="{% url node %}" data-icon="home" data-iconpos="notext" data-direction="reverse">Home</a>
+			<h1>{{ object.title }}</h1>
+            <div data-role="controlgroup" class="ui-btn-right" data-type="horizontal">
+				<a href="{% url node#create %}" data-icon="plus"data-rel="dialog" data-transition="fade" data-role="button">New</a>
+				<a href="{% url node#search %}" data-icon="search"data-rel="dialog" data-transition="fade" data-role="button">Search</a>
+			</div>
+		</div><!-- /header -->
+
+		<div data-role="navbar">
+			<ul>
+				{% include '_node_list.html' with nodes=object.parents.all active=object.parent direction='reverse' %}
+			</ul>
+		</div><!-- /navbar -->
+
+		<div data-role="content">
+
+			<div class="left column">
+				<div data-role="collapsible" data-collapsed="false"  data-inset="false">
+
+						<h3>Navigation</h3>
+
+						<ul data-role="listview" data-filter="true" data-filter-placeholder="Search childs...">
+							{% include '_node_list.html' with nodes=object.children.all parent=object %}
+						</ul>
+				</div>
+			</div>
+			<!--/content-secondary -->
+			
+			<div class="main column">
+				{{ object.content|markdown }}
+			</div>
+			<!--/content-primary -->
+
+			<div class="right column">
+				<div data-role="collapsible" data-collapsed="false"  data-inset="false">
+
+						<h3>Related</h3>
+
+						<ul data-role="listview" data-filter="true" data-filter-placeholder="Search related...">
+							{% include '_node_list.html' with nodes=object.related.all %}
+						</ul>
+				</div>
+			</div>
+			<!--/content-tertiary -->
+
+		</div><!-- /content -->
+
+		<div data-role="footer">
+				<p>&copy; 2012 Jorge Barata</p>
+		</div>
+
+	</div><!-- /page -->
+
+</body>
+</html>

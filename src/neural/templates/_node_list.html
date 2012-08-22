@@ -1,0 +1,17 @@
+{% load url from future %}
+{% for node in nodes %}
+<li>
+	<a
+	{% ifequal node.pk active.pk %} class="ui-btn-active"{% endifequal %}
+	{% if direction %} data-direction="{{ direction }}" {% endif %}
+	href="{% spaceless %}
+	{% if parent %}
+		{% url 'node' pk=node.pk parent_pk=parent.pk %}
+	{% else %}
+		{{ node.get_absolute_url }}
+	{% endif %}
+	{% endspaceless %}">
+		{{ node.title }}
+	</a>
+</li>
+{% endfor %}

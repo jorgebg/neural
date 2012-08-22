@@ -1,0 +1,31 @@
+- model: neural.node
+  pk: 1
+  fields:
+    title: Tasks
+    slug: tasks
+    parents: [0]
+- model: neural.node
+  pk: 2
+  fields:
+    title: Books
+    slug: books
+    parents: [0]
+- model: neural.node
+  pk: 3
+  fields:
+    title: Unread
+    slug: unread
+    parents: [0]
+- model: neural.node
+  pk: 4
+  fields:
+    title: Hyperion
+    content: Hyperion from Dan Simmons
+    parents: [2]
+- model: neural.node
+  pk: 5
+  fields:
+    title: Endymion
+    content: Endymion from Dan Simmons
+    parents: [2, 3]
+    related: [4]

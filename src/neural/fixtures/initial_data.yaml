@@ -1,0 +1,5 @@
+- model: neural.node
+  pk: 0
+  fields:
+    title: Home
+    content: Welcome to Neural!
