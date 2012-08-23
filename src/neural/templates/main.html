@@ -21,7 +21,11 @@
 		<div data-role="header"  data-position="fixed">
 			<a{% if object.is_root %} class="ui-btn-active"{% endif %} href="{% url node %}" data-icon="home" data-iconpos="notext" data-transition="slide" data-transition="slide">Home</a>
 			<h1>{{ object.title }}</h1>
-			<a href="{% url node#create %}" data-icon="gear" data-rel="dialog" data-role="button">Login</a>
+	        {% if user.is_authenticated %}
+	            <a href="{% url logout %}?next={{ request.path }}" rel="external" class="ui-btn-right logout-button" data-icon="minus" title="Log Out of Your Account for Security"><span class="logout-wide">Logout: </span>{{ user.username }}</a>
+	        {% else %}
+				<a href="{% url login %}?next={{ request.path }}" data-icon="gear" data-rel="dialog" data-role="button">Login</a>
+	        {% endif %}
 
 			{% if not object.is_root %}
 			<div class="parents ui-bar ui-bar-d">
