@@ -1,7 +1,6 @@
 from django.db import models
 from django.db.models import Q
 
-
 class Node(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(blank=True)
@@ -56,3 +55,6 @@ class Node(models.Model):
         elif self.parents.count() is 0:
             self.parents.add(Node.ROOT_ID)
         super(Node, self).save()
+
+
+
