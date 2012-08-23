@@ -10,10 +10,11 @@ from .models import Node
 class NodeView(TemplateResponseMixin, BaseDetailView):
     template_name = 'main.html'
 
-class Main(BaseModelResource):
+class Node(BaseModelResource):
     name = 'node'
     model = Node
     pattern = '^'
+
     class Default(NodeView):
         patterns = (
             ('^$', { 'pk': Node.ROOT_ID, 'root': True }),
@@ -22,18 +23,42 @@ class Main(BaseModelResource):
         )
         def get(self, request, *args, **kwargs):
             response = super(NodeView, self).get(request, *args, **kwargs)
-            if self.object.is_root and not kwargs.has_key('root'):
-                return redirect(self.object)
+            object = self.object
+            if object.is_root and not kwargs.has_key('root'):
+                return redirect(object)
             parent_pk = kwargs.get('parent_pk', None)
             if parent_pk is not None:
                 try:
-                    self.object.parent = self.object.parents.get(pk=parent_pk)
+                    object.parent = object.parents.get(pk=parent_pk)
                 except ObjectDoesNotExist:
-                    return redirect(self.object)
+                    return redirect(object)
+            if not hasattr(object, 'parent') and object.parents.count() is 1:
+                object.parent = object.parents.all()[0]
             return response
+
+    class Search(View):
+        pass
 
     class Create(View):
         pass
 
-    class Search(View):
+    class Update(NodeView):
         pass
+
+    class Delete(NodeView):
+        pass
+
+
+class Relation(BaseModelResource):
+    name = 'relation'
+    model = Node
+    default = 'add'
+
+    class Add(NodeView):
+        pattern = '^(?P<pk>\d+)$'
+
+    class Create(View):
+        pattern =  '^(?P<type>parent|child|related)/(?P<related_pk>\d+)/(?P<pk>\d+)$'
+
+    class Delete(View):
+        pattern =  '^delete/(?P<type>parent|child|related)/(?P<related_pk>\d+)/(?P<pk>\d+)$'

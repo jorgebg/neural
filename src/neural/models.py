@@ -21,6 +21,26 @@ class Node(models.Model):
     def is_root(self):
         return self.id is self.ROOT_ID
 
+    @property
+    def previous(self):
+        if hasattr(self, 'parent'):
+            try:
+                return self.parent.children.filter(pk__lt=self.pk).all()[0]
+            except IndexError:
+                return None
+    def has_previous(self):
+        return self.previous is not None
+
+    @property
+    def next(self):
+        if hasattr(self, 'parent'):
+            try:
+                return self.parent.children.filter(pk__gt=self.pk).all()[0]
+            except IndexError:
+                return None
+    def has_next(self):
+        return self.next is not None
+
     @models.permalink
     def get_absolute_url(self):
         args = []

@@ -9,36 +9,40 @@
 	<link rel="stylesheet"  href="http://code.jquery.com/mobile/latest/jquery.mobile.min.css" />
 	<link rel="stylesheet" href="{{ STATIC_URL }}style.css" />
 	<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
-	<script src="{{ STATIC_URL }}config.js"></script>
 	<script src="http://code.jquery.com/mobile/latest/jquery.mobile.min.js"></script>
 </head> 
 <body> 
 
 	<div data-role="page" data-add-back-btn="true" class="type-interior">
-		<div data-role="header">
-			<a{% if object.is_root %} class="ui-btn-active"{% endif %} href="{% url node %}" data-icon="home" data-iconpos="notext" data-direction="reverse">Home</a>
+		<div data-role="header"  data-position="fixed">
+			<a{% if object.is_root %} class="ui-btn-active"{% endif %} href="{% url node %}" data-icon="home" data-iconpos="notext" data-transition="slide" data-transition="slide">Home</a>
 			<h1>{{ object.title }}</h1>
-            <div data-role="controlgroup" class="ui-btn-right" data-type="horizontal">
-				<a href="{% url node#create %}" data-icon="plus"data-rel="dialog" data-transition="fade" data-role="button">New</a>
-				<a href="{% url node#search %}" data-icon="search"data-rel="dialog" data-transition="fade" data-role="button">Search</a>
-			</div>
-		</div><!-- /header -->
+			<a href="{% url node#create %}" data-icon="gear" data-rel="dialog" data-role="button">Login</a>
 
-		<div data-role="navbar">
-			<ul>
-				{% include '_node_list.html' with nodes=object.parents.all active=object.parent direction='reverse' %}
-			</ul>
-		</div><!-- /navbar -->
+			{% if not object.is_root %}
+			<div class="parents ui-bar ui-bar-d">
+			{% include '_node_buttons.html' with nodes=object.parents.all active=object.parent direction='reverse' relation='parent' transition='slide' %}
+			<div data-role="controlgroup" data-type="horizontal" data-mini="true" class="add-btn">
+				<a href="{% url node#create %}" data-role="button" data-icon="plus" data-rel="dialog">Add</a>
+			</div>
+			</div>
+			{% endif %}
+
+		</div><!-- /header -->
 
 		<div data-role="content">
 
 			<div class="left column">
-				<div data-role="collapsible" data-collapsed="false"  data-inset="false">
+				{% if object.has_previous or object.has_next %}
+				<a data-role="button" data-icon="arrow-l" data-direction="reverse" data-mini="true" data-transition="slide" data-corners="false" data-inline="true" {% if object.has_previous %}href="{% url node pk=object.previous.pk parent_pk=object.parent.pk %}"{% endif %} class="ui-collapsible-heading{% if not object.has_previous %} ui-disabled{% endif %}">{% if object.has_previous %}{{ object.previous.title }}{% else %}(None){% endif %}</a>
+				{% endif %}
+				<div data-role="collapsible" data-collapsed="false"  data-inset="false" data-collapsed-icon="arrow-d" data-expanded-icon="arrow-u" data-mini="true" data-theme="a">
 
 						<h3>Navigation</h3>
 
-						<ul data-role="listview" data-filter="true" data-filter-placeholder="Search childs...">
-							{% include '_node_list.html' with nodes=object.children.all parent=object %}
+						<ul data-role="listview" data-filter="true" data-filter-placeholder="Search children..." data-split-icon="delete" data-split-theme="d" class="ui-shadow">
+							{% include '_node_list.html' with nodes=object.children.all parent=object relation='child' transition='slide' %}
+							<li data-mini="true" data-icon="plus" class="ui-btn-icon-left" data-theme="d"><a href="{% url node#create %}">Add</a></li>
 						</ul>
 				</div>
 			</div>
@@ -50,12 +54,16 @@
 			<!--/content-primary -->
 
 			<div class="right column">
-				<div data-role="collapsible" data-collapsed="false"  data-inset="false">
+				{% if object.has_previous or object.has_next %}
+				<a data-role="button" data-icon="arrow-r" data-mini="true" data-transition="slide" data-corners="false" data-inline="true" {% if object.has_next %}href="{% url node pk=object.next.pk parent_pk=object.parent.pk %}"{% endif %} class="ui-collapsible-heading{% if not object.has_next %} ui-disabled{% endif %}">{% if object.has_next %}{{ object.next.title }}{% else %}(None){% endif %}</a>
+				{% endif %}
+				<div data-role="collapsible" data-collapsed="false"  data-inset="false" data-collapsed-icon="arrow-d" data-expanded-icon="arrow-u" data-mini="true" data-theme="a">
 
 						<h3>Related</h3>
 
-						<ul data-role="listview" data-filter="true" data-filter-placeholder="Search related...">
-							{% include '_node_list.html' with nodes=object.related.all %}
+						<ul data-role="listview" data-filter="true" data-filter-placeholder="Search related..." data-split-icon="delete" data-split-theme="d" class="ui-shadow">
+							{% include '_node_list.html' with nodes=object.related.all  relation='related' %}
+							<li data-mini="true" data-icon="plus" class="ui-btn-icon-left" data-theme="d"><a href="{% url node#create %}">Add</a></li>
 						</ul>
 				</div>
 			</div>
@@ -63,8 +71,16 @@
 
 		</div><!-- /content -->
 
-		<div data-role="footer">
-				<p>&copy; 2012 Jorge Barata</p>
+		<div data-role="footer" data-position="fixed">
+			<div data-role="navbar" data-iconpos="left">
+				<ul>
+					<li><a href="{% url node#create %}" data-icon="plus"data-rel="dialog" data-iconpos="notext">New</a></li>
+					<li><a href="{% url relation#add pk=object.pk %}" data-icon="star" data-rel="dialog" data-iconpos="notext">Add</a></li>
+					<li><a href="{% url node#update pk=object.pk %}" data-icon="grid" data-rel="dialog" data-iconpos="notext">Edit</a></li>
+					<li><a href="{% url node#delete pk=object.pk %}" data-icon="delete" data-rel="dialog" data-iconpos="notext">Delete</a></li>
+					<li><a href="{% url node#search %}" data-icon="search"data-rel="dialog"  data-iconpos="notext">Search</a></li>
+				</ul>
+			</div><!-- /navbar -->
 		</div>
 
 	</div><!-- /page -->

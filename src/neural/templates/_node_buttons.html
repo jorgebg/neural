@@ -1,7 +1,7 @@
 {% load url from future %}
 {% for node in nodes %}
-<li>
-	<a
+<div data-role="controlgroup" data-type="horizontal" data-mini="true">
+	<a data-role="button"
 	{% ifequal node.pk active.pk %} class="ui-btn-active"{% endifequal %}
 	{% if direction %} data-direction="{{ direction }}" {% endif %}
 	{% if transition %} data-transition="{{ transition }}" {% endif %}
@@ -14,6 +14,7 @@
 	{% endspaceless %}">
 		{{ node.title }}
 	</a>
-	<a href="{% url 'relation#delete' type=relation pk=object.pk related_pk=node.pk %}" >Delete</a>
-</li>
+	<a data-role="button" data-icon="delete" data-iconpos="notext"
+	href="{% url 'relation#delete' type=relation pk=object.pk related_pk=node.pk %}" >Delete</a>
+</div>
 {% endfor %}
