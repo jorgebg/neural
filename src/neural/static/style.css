@@ -15,7 +15,9 @@
 	}
 
 	.column.main {
-		width: 40%;
+		width: 50%;
+        text-align: justify;
+        text-justify: newspaper;
 	}
 
     .column.left {
